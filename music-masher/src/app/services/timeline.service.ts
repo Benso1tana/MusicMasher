@@ -40,13 +40,11 @@ export class TimelineService {
       const track = new AudioTrack(file);
       const audioBuffer = await this.audioService.loadAudioFile(file);
       track.setAudioBuffer(audioBuffer);
-      
-      // Position the new track at the end of existing tracks or at 0
-      if (this.timeline.tracks.length > 0) {
-        const lastTrack = this.timeline.tracks[this.timeline.tracks.length - 1];
-        track.setStartTime(lastTrack.getEndTime());
-      }
-      
+
+      // All tracks start at time 0 by default so they can be layered/mixed together
+      // Users can drag tracks to different positions if needed
+      track.setStartTime(0);
+
       this.timeline.addTrack(track);
       this.notifyUpdate();
     } catch (error) {
