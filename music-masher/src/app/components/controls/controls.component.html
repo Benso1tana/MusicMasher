@@ -1,0 +1,90 @@
+<div class="controls-container">
+  <!-- Playback Controls -->
+  <div class="playback-controls">
+    <button 
+      class="control-button play-pause"
+      (click)="togglePlayPause()"
+      [disabled]="!timeline || timeline.tracks.length === 0"
+      [title]="timeline?.isPlaying ? 'Pause' : 'Play'"
+    >
+      <span *ngIf="!timeline?.isPlaying">▶</span>
+      <span *ngIf="timeline?.isPlaying">⏸</span>
+    </button>
+
+    <button 
+      class="control-button"
+      (click)="stop()"
+      [disabled]="!timeline || timeline.tracks.length === 0"
+      title="Stop"
+    >
+      ⏹
+    </button>
+  </div>
+
+  <!-- Time Display -->
+  <div class="time-display" *ngIf="timeline">
+    <span class="current-time">{{ formatTime(timeline.currentTime) }}</span>
+    <span class="separator">/</span>
+    <span class="total-time">{{ formatTime(timeline.duration) }}</span>
+  </div>
+
+  <!-- Progress Bar -->
+  <div class="progress-container" *ngIf="timeline">
+    <div class="progress-bar">
+      <div 
+        class="progress-fill"
+        [style.width.%]="getProgress()"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Zoom Controls -->
+  <div class="zoom-controls">
+    <button 
+      class="control-button small"
+      (click)="zoomOut()"
+      title="Zoom Out"
+    >
+      −
+    </button>
+
+    <span class="zoom-label" *ngIf="timeline">
+      {{ timeline.zoom.toFixed(0) }}px/s
+    </span>
+
+    <button 
+      class="control-button small"
+      (click)="zoomIn()"
+      title="Zoom In"
+    >
+      +
+    </button>
+
+    <button 
+      class="control-button small"
+      (click)="resetZoom()"
+      title="Reset Zoom"
+    >
+      ↺
+    </button>
+  </div>
+
+  <!-- Track Info -->
+  <div class="track-info" *ngIf="timeline">
+    <span class="track-count">
+      {{ timeline.tracks.length }} track{{ timeline.tracks.length !== 1 ? 's' : '' }}
+    </span>
+  </div>
+
+  <!-- Clear All -->
+  <div class="clear-controls">
+    <button 
+      class="control-button danger"
+      (click)="clearAll()"
+      [disabled]="!timeline || timeline.tracks.length === 0"
+      title="Clear All Tracks"
+    >
+      Clear All
+    </button>
+  </div>
+</div>

@@ -1,0 +1,127 @@
+<div class="timeline-container">
+  <!-- File Upload Area -->
+  <div 
+    class="upload-zone"
+    (drop)="onFileDrop($event)"
+    (dragover)="onDragOver($event)"
+  >
+    <div class="upload-content">
+      <i class="upload-icon">🎵</i>
+      <p>Drag & Drop audio files here</p>
+      <p class="upload-hint">or</p>
+      <label class="upload-button">
+        <input
+          type="file"
+          multiple
+          accept="audio/*"
+          (change)="onFileSelect($event)"
+          style="display: none"
+        />
+        Browse Files
+      </label>
+      <p class="supported-formats">Supported: MP3, WAV, OGG, M4A</p>
+    </div>
+  </div>
+
+  <!-- Timeline -->
+  <div 
+    class="timeline"
+    (mousemove)="onMouseMove($event)"
+    (mouseup)="onMouseUp()"
+    (mouseleave)="onMouseUp()"
+  >
+    <!-- Time Ruler -->
+    <div class="time-ruler" *ngIf="timeline">
+      <div 
+        class="time-marker" 
+        *ngFor="let i of getTimeMarkers()"
+        [style.left.px]="i * timeline.zoom"
+      >
+        <span class="time-label">{{ formatTime(i) }}</span>
+      </div>
+    </div>
+
+    <!-- Tracks Container -->
+    <div class="tracks-container" *ngIf="timeline">
+      <div class="track-row" *ngFor="let track of timeline.tracks; let idx = index">
+        <!-- Track Controls -->
+        <div class="track-controls">
+          <div class="track-name" [title]="track.name">
+            {{ track.name }}
+          </div>
+          
+          <div class="track-buttons">
+            <button 
+              class="control-btn"
+              [class.active]="track.isMuted"
+              (click)="toggleMute(track.id)"
+              title="Mute"
+            >
+              M
+            </button>
+            
+            <button 
+              class="control-btn"
+              [class.active]="track.isSolo"
+              (click)="toggleSolo(track.id)"
+              title="Solo"
+            >
+              S
+            </button>
+            
+            <button 
+              class="control-btn delete"
+              (click)="removeTrack(track.id)"
+              title="Delete"
+            >
+              ×
+            </button>
+          </div>
+
+          <div class="volume-control">
+            <label>Vol:</label>
+            <input 
+              type="range"
+              min="0"
+              max="1"
+              step="0.01"
+              [value]="track.volume"
+              (input)="onVolumeChange($event, track.id)"
+            />
+            <span class="volume-value">{{ (track.volume * 100).toFixed(0) }}%</span>
+          </div>
+        </div>
+
+        <!-- Track Timeline -->
+        <div class="track-timeline">
+          <div 
+            class="track-block"
+            [style.left.px]="getTrackLeft(track)"
+            [style.width.px]="getTrackWidth(track)"
+            [style.background-color]="track.color"
+            [class.muted]="track.isMuted"
+            [class.solo]="track.isSolo"
+            (mousedown)="onTrackMouseDown($event, track)"
+          >
+            <div class="track-block-label">
+              {{ track.name }}
+            </div>
+            <div class="waveform"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Playhead -->
+      <canvas 
+        #timelineCanvas
+        class="timeline-canvas"
+        (click)="onTimelineClick($event)"
+      ></canvas>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!timeline || timeline.tracks.length === 0">
+      <p>No tracks loaded. Add audio files to get started!</p>
+    </div>
+  </div>
+</div>
